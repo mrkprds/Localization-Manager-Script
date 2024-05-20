@@ -9,7 +9,7 @@ import json
 class IOSTranslation(GenerateTranslation):
 
     """
-    An xcstrings file is comprised of the following structure and is mapped using the following properties
+    An XCStrings file is composed of the following structure and is mapped using the following properties
     {
           "sourceLanguage" : COLUMN_VALUE.LANGUAGE_CODE,
           "strings" : {
@@ -51,7 +51,7 @@ class IOSTranslation(GenerateTranslation):
 
                         # Append Localization String
 
-                        #Check if key and value is not empty
+                        # Check if key and value is not empty
                         if not localized_string.localized_key or not localized_string.localized_value:
                             continue
 

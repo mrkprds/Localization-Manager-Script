@@ -8,7 +8,6 @@ from Models.localized_column import LocalizedColumn
 from Models.localized_string import LocalizedString
 
 
-
 # noinspection PyCompatibility
 class GenerateTranslation:
 
@@ -94,23 +93,20 @@ class GenerateTranslation:
 
         # Base Language
         base_language_column_name = data_frame.columns[1]
-        base_language_column = data_frame[base_language_column_name]
+        base_language_rows = data_frame[base_language_column_name]
 
         # Define column object
         localized_columns: List[LocalizedColumn] = []
 
         # Loop through columns starting from column B
         for column_name in columns_to_iterate:
-
-            #Get the rows in column
+            # Get the rows in column
             rows: List[str] = data_frame[column_name]
 
             # Define the starting row of localized strings
             row_stat_index = 6
 
             # Generate the keys
-            base_language_column_name = data_frame.columns[1]
-            base_language_rows = data_frame[base_language_column_name]
             keys: List[str] = self._splice_and_update_index(start_index=row_stat_index, array=base_language_rows)
 
             # Slice rows and create a new list with index 0
