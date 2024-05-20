@@ -3,13 +3,13 @@ import os.path
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
+from generate_translations_ios import IOSTranslation
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
 
 # Additional Constants
 credential_file = "client_secret_505442340141-8o06brqss1an7qm46hnvrsqssoh8latg.apps.googleusercontent.com.json"
-
 
 def main():
     """Calls the Apps Script API."""
@@ -31,6 +31,11 @@ def main():
         # Save the credentials for the next run
         with open("token.json", "w") as token:
             token.write(creds.to_json())
+
+    test = IOSTranslation(credentials=creds)
+    test.generate()
+    # print(test.sheets[0].columns[0].language_name)
+
 
 
 main()
