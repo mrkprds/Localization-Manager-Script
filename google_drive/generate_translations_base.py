@@ -89,35 +89,50 @@ class GenerateTranslation:
         # Define the columns to iterate (using index slicing)
         columns_to_iterate = data_frame.columns[start_column_index:]
 
+        # Base Language
+        base_language_column_name = data_frame.columns[1]
+        base_language_column = data_frame[base_language_column_name]
+
         # Define column object
         localized_columns: List[LocalizedColumn] = []
 
         # Loop through columns starting from column B
         for column_name in columns_to_iterate:
-            column = data_frame[column_name]
+
+            #Get the rows in column
+            rows: List[str] = data_frame[column_name]
 
             # Define the starting row of localized strings
             row_stat_index = 6
 
-            # Slice rows in columns and create a new list with index 0
-            row_of_strings = [item for item in column[row_stat_index:]]
+            # Generate the keys
+            base_language_column_name = data_frame.columns[1]
+            base_language_rows = data_frame[base_language_column_name]
+            keys: List[str] = self._splice_and_update_index(start_index=row_stat_index, array=base_language_rows)
+
+            # Slice rows and create a new list with index 0
+            row_of_strings = self._splice_and_update_index(start_index=row_stat_index, array=rows)
 
             localized_columns.append(
                 LocalizedColumn(
-                    language=column[0],
-                    language_code=column[1],
-                    language_name=column[2],
-                    strings=self._generate_string_rows(rows=row_of_strings, comments=comments)
+                    language=rows[0],
+                    language_code=rows[1],
+                    language_name=rows[2],
+                    strings=self._generate_string_rows(keys=keys, rows=row_of_strings, comments=comments)
                 )
             )
 
         return localized_columns
 
-    def _generate_string_rows(self, rows: List[str], comments: List[str]) -> List[LocalizedString]:
+    def _generate_string_rows(self, keys: List[str], rows: List[str], comments: List[str]) -> List[LocalizedString]:
         """
             This function iterates through a list of strings (representing rows in a column) and creates
             LocalizedString objects. Each LocalizedString object contains the localized value from the row
             and the corresponding comment (if available).
+
+        :param keys List[str]:
+        A list of strings representing keys for each localized string. The length of this list
+        should correspond to the number of rows with actual translations
 
         :param rows List[str]:
             A list of strings, where each string represents a row in a column from the worksheet.
@@ -131,12 +146,24 @@ class GenerateTranslation:
         localized_strings: List[LocalizedString] = []
 
         for row_index, row_value in enumerate(rows):
-            localized_strings.append(
-                LocalizedString(
-                    localized_value=row_value,
-                    comment=self._get_comments_in_range(index=row_index, comments=comments)
+            if row_index <= len(keys) - 1:
+                localized_strings.append(
+                    LocalizedString(
+                        localized_key=keys[row_index],
+                        localized_value=row_value,
+                        comment=self._get_comments_in_range(index=row_index, comments=comments)
+                    )
                 )
-            )
+
+            else:
+                localized_strings.append(
+                    LocalizedString(
+                        localized_key="",
+                        localized_value=row_value,
+                        comment=self._get_comments_in_range(index=row_index, comments=comments)
+                    )
+                )
+
         return localized_strings
 
     def _get_comments_in_range(self, index: int, comments: List[str]) -> str:
