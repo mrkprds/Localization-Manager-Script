@@ -115,8 +115,8 @@ class GenerateTranslation:
 
             localized_columns.append(
                 LocalizedColumn(
-                    language=rows[0],
-                    language_code=rows[1],
+                    language_code=rows[0],
+                    language=rows[1],
                     language_name=rows[2],
                     strings=self._generate_string_rows(keys=keys, rows=row_of_strings, comments=comments)
                 )

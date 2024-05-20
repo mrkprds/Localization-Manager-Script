@@ -11,19 +11,19 @@ class LocalizedColumn:
         translated string value and an optional comment.
    """
 
-    def __init__(self, language: str, language_code: str, language_name: str, strings: List[LocalizedString]):
+    def __init__(self,language_code: str,  language: str, language_name: str, strings: List[LocalizedString]):
         """Initializes a new LocalizedColumn object.
 
            Args:
-               language (str): Name of the language represented by this column (e.g., "English").
                language_code (str): Language code associated with the language (e.g., "en").
+               language (str): Name of the language represented by this column (e.g., "English").
                language_name (str): Full name of the language (e.g., "English (US)").
                strings List[LocalizedString]: List of LocalizedString objects, where each object
                                               represents a row in the column containing the translated
                                               string value and an optional comment.
         """
-        self._language = language
         self._language_code = language_code
+        self._language = language
         self._language_name = language_name
         self._strings = strings
 
