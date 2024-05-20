@@ -8,6 +8,26 @@ import json
 # noinspection PyCompatibility
 class IOSTranslation(GenerateTranslation):
 
+    """
+    An xcstrings file is comprised of the following structure and is mapped using the following properties
+    {
+          "sourceLanguage" : COLUMN_VALUE.LANGUAGE_CODE,
+          "strings" : {
+            LOCALIZED_STRING.LOCALIZED_KEY : {
+              "localizations" : {
+                "LOCALIZED_STRING.LANGUAGE_CODE" : {
+                  "stringUnit" : {
+                    "state" : "translated",
+                    "value" : "LOCALIZED_STRING.LOCALIZED_VALUE"
+                  }
+                }
+              }
+            },
+          },
+          "version" : "1.0"
+        }
+    """
+
     def generate(self):
         dictionary = {
             "sourceLanguage": "",
@@ -17,6 +37,8 @@ class IOSTranslation(GenerateTranslation):
 
         for sheet in self.sheets:
             for column_index, column_value in enumerate(sheet.columns):
+
+                # First language on the columns list will be considered the default or source language
                 if column_index == 0:
                     dictionary["sourceLanguage"] = column_value.language_code
 
@@ -28,13 +50,19 @@ class IOSTranslation(GenerateTranslation):
                     for localized_string in column_value.strings:
 
                         # Append Localization String
+
+                        #Check if key and value is not empty
                         if not localized_string.localized_key or not localized_string.localized_value:
                             continue
 
-                        if localized_string.localized_value.startswith("//"):
+                        # Check if value is not a comment
+                        if (not localized_string.localized_key.startswith("//") and
+                                localized_string.localized_value.startswith("//")):
                             continue
 
-                        dictionary["strings"][localized_string.localized_key].update({
+                        # Check if field "localizations" exist
+                        if "localizations" not in dictionary["strings"][localized_string.localized_key]:
+                            dictionary["strings"][localized_string.localized_key].update({
                                 "localizations": {
                                     column_value.language_code: {
                                         "stringUnit": {
@@ -43,8 +71,18 @@ class IOSTranslation(GenerateTranslation):
                                         }
                                     }
                                 }
+                            })
+                            continue
+
+                        # If it already exists only append the localized string in the "localizations" field
+                        dictionary["strings"][localized_string.localized_key]["localizations"].update({
+                            column_value.language_code: {
+                                "stringUnit": {
+                                    "state": "translated",
+                                    "value": localized_string.localized_value
+                                }
                             }
-                        )
+                        })
 
                         # Append Comments on Localization String (if there's any)
                         if not localized_string.comment:
