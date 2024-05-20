@@ -8,6 +8,7 @@ from Models.localized_column import LocalizedColumn
 from Models.localized_string import LocalizedString
 
 
+
 # noinspection PyCompatibility
 class GenerateTranslation:
 
@@ -18,6 +19,8 @@ class GenerateTranslation:
         """
 
         spreadsheet_file_name: str = "Translations"
+
+        self._credentials = credentials
 
         # Authorize the client using the credentials
         spreadsheet_service: gspread.Client = gspread.authorize(credentials)

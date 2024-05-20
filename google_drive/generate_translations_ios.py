@@ -1,9 +1,13 @@
 from generate_translations_base import GenerateTranslation
-from  typing import
+from googleapiclient.discovery import build
+from file_manager import FileManager
 
 import json
 
+
+# noinspection PyCompatibility
 class IOSTranslation(GenerateTranslation):
+
     def generate(self):
         dictionary = {}
 
@@ -42,11 +46,11 @@ class IOSTranslation(GenerateTranslation):
                         dictionary[localized_string.localized_key]["comment"] = localized_string.comment
 
         dictionary["version"] = "1.0"
-        json_data = json.dumps(dictionary)
 
-        self.file_manager.save_to_google_drive(
-            file=json_data,
-            file_name="Localization.json",
-            folder_name="iOS"
-
+        FileManager.save_to_google_drive(
+            drive_service=build('drive', 'v3', credentials=self._credentials),
+            file=json.dumps(dictionary),
+            file_name="Localizable.json",
+            mime_type="application/json",
+            folder_structure=['Translations', 'iOS']
         )
